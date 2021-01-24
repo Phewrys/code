@@ -1,8 +1,9 @@
+import { TestStyled } from './../content/styles/Styled'
 
 export default function Test() {
 
     return (
-        <>
+        <TestStyled>
             <div style={{ fontSize: '70px' }}><strong>code<span>7</span></strong></div>
             <div className="container shadow" style={{ width: '900px' }}>
                 <div className="row justify-content-start">
@@ -53,6 +54,6 @@ export default function Test() {
                     </div>
                 </div>
             </div>
-        </>
+        </TestStyled>
     )
 }
