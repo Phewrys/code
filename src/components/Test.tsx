@@ -1,7 +1,7 @@
 import { TestStyled } from './../content/styles/Styled'
-import { useEffect, useState } from 'react'
+import { useEffect, FormEvent, useState } from 'react'
 import apiJSONPlaceholder from './../services/apiJSONPlaceholder'
-
+import apiFlex from './../services/apiFlex'
 
 interface JSONPlaceholder {
     id: number;
@@ -9,9 +9,20 @@ interface JSONPlaceholder {
     username: string;
 }
 
+interface Flex {
+    idUsuario: number;
+    motivo: string;
+    valor: number;
+    criado: Date;
+}
+
 export default function Test() {
 
     const [placeholders, setPlaceholder] = useState<JSONPlaceholder[]>([]);
+    const [flexs, setFlex] = useState<Flex[]>([]);
+    let [cliente, setCliente] = useState('')
+    let [motivo, setMotivo] = useState('')
+    let [valor, setValor] = useState('')
 
     // GET - JSONPlaceholder 
     useEffect(() => {
@@ -20,6 +31,31 @@ export default function Test() {
         })
     }, []);
 
+    // GET - FLEX
+    useEffect(() => {
+        apiFlex.get(`divida?uuid=8d7297ad-3caa-4bab-9e16-99653958fac5`).then(response => {
+            setFlex(response.data.result);
+        })
+    }, []);
+
+    async function handleSubmit(event: FormEvent) {
+        event.preventDefault();
+
+        // POST - FLEX
+        fetch('https://provadev.xlab.digital/api/v1/divida?uuid=8d7297ad-3caa-4bab-9e16-99653958fac5', {
+            method: 'POST',
+            body: JSON.stringify({
+                idUsuario: cliente,
+                motivo: motivo,
+                valor: valor,
+            }),
+            headers: {
+                'Content-type': 'application/json; charset=UTF-8',
+            },
+        });
+
+    };
+
     return (
         <TestStyled>
             <div style={{ fontSize: '70px' }}><strong>code<span>7</span></strong></div>
@@ -27,33 +63,37 @@ export default function Test() {
                 <div className="row justify-content-start">
                     <div className="col-3">
                         <div className="row justify-content-center">
-                            <div className="col-12 shadow m-2" style={{ width: '500px' }}>FULANO</div>
+                            {flexs.map(flex => {
+                                return (
+                                    <div className="col-12 shadow m-2" style={{ width: '500px' }}>{flex.idUsuario}</div>
+                                )
+                            })
+                            }
                         </div>
                     </div>
                     <div className="col-7 m-2">
                         <div className="shadow row justify-content-end">
                             <div className="col-12">
                                 <div className="container">
-                                    <form>
+                                    <form onSubmit={handleSubmit} >
                                         <div className="form-group text-left">
                                             <label htmlFor="idCliente">Cliente</label>
-                                            <select className="form-control" id="idCliente" required>
+                                            <select className="form-control" id="idCliente" onChange={e => setCliente(e.target.value)} required>
                                                 <option selected>-- Selecionar --</option>
                                                 {placeholders.map(placeholder => {
                                                     return (
                                                         <option value={`${placeholder.id}`}>{placeholder.name}</option>
                                                     )
-                                                })
-                                                }
+                                                })}
                                             </select>
                                         </div>
                                         <div className="form-group text-left">
                                             <label htmlFor="idMotivo">Motivo</label>
-                                            <input type="text" className="form-control" id="idMotivo" placeholder="Ex: dívida cartão de crédito" required />
+                                            <input type="text" className="form-control" id="idMotivo" placeholder="Ex: dívida cartão de crédito" onChange={e => setMotivo(e.target.value)} required />
                                         </div>
                                         <div className="form-group text-left w-50">
                                             <label htmlFor="idValor">Valor</label>
-                                            <input type="number" className="form-control" id="idValor" placeholder="Ex: R$ 500,00" required />
+                                            <input type="number" className="form-control" id="idValor" placeholder="Ex: R$ 500,00" onChange={e => setValor(e.target.value)} required />
                                         </div>
                                         <div className="row justify-content-end">
                                             <div className="col-3">
