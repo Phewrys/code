@@ -1,6 +1,24 @@
 import { TestStyled } from './../content/styles/Styled'
+import { useEffect, useState } from 'react'
+import apiJSONPlaceholder from './../services/apiJSONPlaceholder'
+
+
+interface JSONPlaceholder {
+    id: number;
+    name: string;
+    username: string;
+}
 
 export default function Test() {
+
+    const [placeholders, setPlaceholder] = useState<JSONPlaceholder[]>([]);
+
+    // GET - JSONPlaceholder 
+    useEffect(() => {
+        apiJSONPlaceholder.get(`users`).then(response => {
+            setPlaceholder(response.data);
+        })
+    }, []);
 
     return (
         <TestStyled>
@@ -21,9 +39,12 @@ export default function Test() {
                                             <label htmlFor="idCliente">Cliente</label>
                                             <select className="form-control" id="idCliente" required>
                                                 <option selected>-- Selecionar --</option>
-                                                <option selected>1</option>
-                                                <option selected>2</option>
-                                                <option selected>3</option>
+                                                {placeholders.map(placeholder => {
+                                                    return (
+                                                        <option value={`${placeholder.id}`}>{placeholder.name}</option>
+                                                    )
+                                                })
+                                                }
                                             </select>
                                         </div>
                                         <div className="form-group text-left">
