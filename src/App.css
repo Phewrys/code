@@ -36,3 +36,49 @@
     transform: rotate(360deg);
   }
 }
+
+.shadow {
+  border: solid 2px #00ffd0;
+}
+
+h1, h3, span {
+  color: #00ffd0;
+}
+
+.modal-content {
+  background-color: #282c34 !important;
+  color: white;
+}
+
+.modal-content .btn-green {
+  color: #fff;
+  border: solid 2px green;
+  background: none;
+  width: 100px;
+  transition: 0.7s ease-in-out;
+}
+
+.modal-content .btn-red {
+  color: #fff;
+  border: solid 2px red;
+  background: none;
+  width: 100px;
+  transition: 0.7s ease-in-out;
+}
+
+.modal-content .btn-green:hover {
+  color: #fff;
+  background-color: #00800040;
+  transform: scale(1.2);
+}
+
+.modal-content .btn-red:hover {
+  color: #fff;
+  background-color: #ff000040;
+  transform: scale(1.2);
+}
+
+.swal-title {
+  margin-bottom: 28px;
+  color: #282c34;
+}
