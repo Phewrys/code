@@ -10,6 +10,7 @@ interface JSONPlaceholder {
 }
 
 interface Flex {
+    _id: string;
     idUsuario: number;
     motivo: string;
     valor: number;
@@ -17,31 +18,39 @@ interface Flex {
 }
 
 export default function Test() {
-
     const [placeholders, setPlaceholder] = useState<JSONPlaceholder[]>([]);
-    const [flexs, setFlex] = useState<Flex[]>([]);
+    const [flexsAll, setFlexAll] = useState<Flex[]>([]);
+
     let [cliente, setCliente] = useState('')
     let [motivo, setMotivo] = useState('')
     let [valor, setValor] = useState('')
 
-    // GET - JSONPlaceholder 
+    let [idPut, setIdPut] = useState('')
+    let [idUsuarioPut, setIdUsuarioPut] = useState('')
+    let [nomePut, setNomePut] = useState('')
+    let [motivoPut, setMotivoPut] = useState('')
+    let [valorPut, setValorPut] = useState('')
+
+    // GET ALL - JSONPlaceholder 
     useEffect(() => {
         apiJSONPlaceholder.get(`users`).then(response => {
             setPlaceholder(response.data);
         })
     }, []);
 
-    // GET - FLEX
-    useEffect(() => {
-        apiFlex.get(`divida?uuid=8d7297ad-3caa-4bab-9e16-99653958fac5`).then(response => {
-            setFlex(response.data.result);
-        })
-    }, []);
-
-    async function handleSubmit(event: FormEvent) {
+    // OBTER TODOS - GET
+    async function handleGet(event: FormEvent) {
         event.preventDefault();
 
-        // POST - FLEX
+        fetch('https://provadev.xlab.digital/api/v1/divida?uuid=8d7297ad-3caa-4bab-9e16-99653958fac5')
+            .then((response) => response.json())
+            .then((json) => setFlexAll(json.result));
+    };
+
+    // CADASTRAR - POST
+    async function handlePost(event: FormEvent) {
+        event.preventDefault();
+
         fetch('https://provadev.xlab.digital/api/v1/divida?uuid=8d7297ad-3caa-4bab-9e16-99653958fac5', {
             method: 'POST',
             body: JSON.stringify({
@@ -52,9 +61,45 @@ export default function Test() {
             headers: {
                 'Content-type': 'application/json; charset=UTF-8',
             },
-        });
-
+        })
     };
+
+    // ALTERAR - GET/:id
+    function handlePutId(id: string) {
+        apiFlex.get(`divida/${id}?uuid=8d7297ad-3caa-4bab-9e16-99653958fac5`).then(response => {
+            setIdUsuarioPut(response.data.result.idUsuario)
+            setMotivoPut(response.data.result.motivo)
+            setValorPut(response.data.result.valor)
+        })
+
+        setIdPut(id)
+    }
+
+    // ALTERAR - PUT
+    async function handlePut(event: FormEvent) {
+        event.preventDefault();
+
+        const requestOptions = {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                idUsuario: idUsuarioPut,
+                motivo: motivoPut,
+                valor: valorPut,
+            })
+        };
+
+        fetch(`https://provadev.xlab.digital/api/v1/divida/${idPut}?uuid=8d7297ad-3caa-4bab-9e16-99653958fac5`, requestOptions)
+            .then(response => response.json())
+    };
+
+    // DELETAR - DELETE/:id
+    async function handleDelete(id: string) {
+
+        fetch(`https://provadev.xlab.digital/api/v1/divida/${id}?uuid=8d7297ad-3caa-4bab-9e16-99653958fac5`, {
+            method: 'DELETE',
+        });
+    }
 
     return (
         <TestStyled>
