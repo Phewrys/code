@@ -2,6 +2,10 @@ import { TestStyled } from './../content/styles/Styled'
 import { useEffect, FormEvent, useState } from 'react'
 import apiJSONPlaceholder from './../services/apiJSONPlaceholder'
 import apiFlex from './../services/apiFlex'
+import { Table, Modal } from 'react-bootstrap'
+import Moment from 'moment'
+import { BsPencil } from 'react-icons/bs'
+import { VscChromeClose } from 'react-icons/vsc'
 
 interface JSONPlaceholder {
     id: number;
@@ -18,6 +22,10 @@ interface Flex {
 }
 
 export default function Test() {
+    const [modalDefault, setModalDefaultShow] = useState(false);
+    const modalDefaultClose = () => setModalDefaultShow(false);
+    const modalDefaultShow = () => setModalDefaultShow(true);
+    
     const [placeholders, setPlaceholder] = useState<JSONPlaceholder[]>([]);
     const [flexsAll, setFlexAll] = useState<Flex[]>([]);
 
@@ -73,6 +81,7 @@ export default function Test() {
         })
 
         setIdPut(id)
+        modalDefaultShow()
     }
 
     // ALTERAR - PUT
@@ -103,63 +112,141 @@ export default function Test() {
 
     return (
         <TestStyled>
-            <div style={{ fontSize: '70px' }}><strong>code<span>7</span></strong></div>
-            <div className="container shadow" style={{ width: '900px' }}>
-                <div className="row justify-content-start">
-                    <div className="col-3">
-                        <div className="row justify-content-center">
-                            {flexs.map(flex => {
-                                return (
-                                    <div className="col-12 shadow m-2" style={{ width: '500px' }}>{flex.idUsuario}</div>
-                                )
-                            })
-                            }
-                        </div>
-                    </div>
-                    <div className="col-7 m-2">
-                        <div className="shadow row justify-content-end">
-                            <div className="col-12">
-                                <div className="container">
-                                    <form onSubmit={handleSubmit} >
-                                        <div className="form-group text-left">
-                                            <label htmlFor="idCliente">Cliente</label>
-                                            <select className="form-control" id="idCliente" onChange={e => setCliente(e.target.value)} required>
-                                                <option selected>-- Selecionar --</option>
-                                                {placeholders.map(placeholder => {
-                                                    return (
-                                                        <option value={`${placeholder.id}`}>{placeholder.name}</option>
-                                                    )
-                                                })}
-                                            </select>
-                                        </div>
-                                        <div className="form-group text-left">
-                                            <label htmlFor="idMotivo">Motivo</label>
-                                            <input type="text" className="form-control" id="idMotivo" placeholder="Ex: dívida cartão de crédito" onChange={e => setMotivo(e.target.value)} required />
-                                        </div>
-                                        <div className="form-group text-left w-50">
-                                            <label htmlFor="idValor">Valor</label>
-                                            <input type="number" className="form-control" id="idValor" placeholder="Ex: R$ 500,00" onChange={e => setValor(e.target.value)} required />
-                                        </div>
-                                        <div className="row justify-content-end">
-                                            <div className="col-3">
-                                                <button type="reset" className="btn btn-light mb-2"><strong>Excluir</strong></button>
-                                            </div>
-                                            <div className="col-3">
-                                                <button type="submit" className="btn btn-light mb-2"><strong>Salvar</strong></button>
-                                            </div>
-                                        </div>
-                                    </form>
-                                </div>
+            <div className="py-5">
+                <div style={{ fontSize: '70px' }}><strong>code<span>7</span></strong></div>
+                <div className="container shadow" style={{ width: '90vw', minWidth: '300px', padding: '30px' }}>
+                    <div className="row justify-content-center">
+                        <form onSubmit={handlePost} style={{ width: '100vw', maxWidth: '1000px' }}>
+                            <p className="text-left pt-2"><h1><strong>Cadastrar</strong></h1></p>
+                            <div className="form-group text-left">
+                                <label htmlFor="idCliente">Cliente</label>
+                                <select className="form-control" id="idCliente" onChange={e => setCliente(e.target.value)} required>
+                                    <option selected>-- Selecionar --</option>
+                                    {placeholders.map(placeholder => {
+                                        return (
+                                            <option value={`${placeholder.id}`}>{placeholder.name}</option>
+                                        )
+                                    })}
+                                </select>
                             </div>
-                        </div>
+                            <div className="form-group text-left">
+                                <label htmlFor="idMotivo">Motivo</label>
+                                <input type="text" className="form-control" id="idMotivo" placeholder="Ex: dívida cartão de crédito" onChange={e => setMotivo(e.target.value)} required />
+                            </div>
+                            <div className="form-group text-left w-50">
+                                <label htmlFor="idValor">Valor</label>
+                                <input type="number" className="form-control" id="idValor" placeholder="Ex: R$ 500,00" onChange={e => setValor(e.target.value)} required />
+                            </div>
+                            <hr />
+                            <div className="form-group row justify-content-center">
+                                <button type="submit" className="btn btn-green m-2" style={{ width: '100px' }}><strong>Salvar</strong></button>
+                                <button type="reset" className="btn btn-red m-2" style={{ width: '100px' }}><strong>Cancelar</strong></button>
+                            </div>
+                        </form>
                     </div>
                 </div>
-                <div className="row">
-                    <div className="col-md-3 offset-md-9">
-                        <button type="reset" className="btn btn-light btn-lg mb-2 px-4"><strong>NOVO</strong></button>
+                <div className="container shadow mt-3" style={{ width: '90vw', minWidth: '300px', padding: '30px' }}>
+                    <div className="row justify-content-center">
+                        <form onSubmit={handleGet} style={{ width: '100vw', maxWidth: '1000px' }}>
+                            <p className="text-left pt-2"><h1><strong>Consultar</strong></h1></p>
+                            <div className="form-group text-left">
+                                <label htmlFor="idCliente">Cliente</label>
+                                <select className="form-control" id="idCliente" onChange={e => setCliente(e.target.value)} required>
+                                    <option value="0" selected> TODOS </option>
+                                    {placeholders.map(placeholder => {
+                                        return (
+                                            <option value={`${placeholder.id}`}>{placeholder.name}</option>
+                                        )
+                                    })}
+                                </select>
+                            </div>
+                            <hr />
+                            <div className="form-group row justify-content-center">
+                                <button type="submit" className="btn btn-green m-2" style={{ width: '100px' }}><strong>Consultar</strong></button>
+                                <button type="reset" className="btn btn-red m-2" style={{ width: '100px' }}><strong>Cancelar</strong></button>
+                            </div>
+                        </form>
+
+                        <div className="container pt-4">
+                            <Table striped bordered hover size="sm" variant="dark" responsive>
+                                <thead>
+                                    <tr>
+                                        <th><h3>AÇÕES</h3></th>
+                                        <th><h3>NOME</h3></th>
+                                        <th><h3>VALOR</h3></th>
+                                        <th><h3>MOTIVO</h3></th>
+                                        <th><h3>DATA</h3></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {flexsAll.map(flex => {
+                                        return (
+                                            <tr>
+                                                <td>
+                                                    <a onClick={(e) => handlePutId(flex._id)} className="w-100 text-primary" href="javascript:void(0);"><BsPencil className="bs-5x" /></a>
+                                                    {' '}
+                                                    <a onClick={(e) => handleDelete(flex._id)} className="w-100 text-danger" href="javascript:void(0);"><strong><VscChromeClose className="vsc-5x" /></strong></a>
+                                                </td>
+                                                <td>
+                                                    {flex.idUsuario}
+                                                </td>
+                                                <td>
+                                                    R${flex.valor}
+                                                </td>
+                                                <td>
+                                                    {flex.motivo}
+                                                </td>
+                                                <td>
+                                                    {Moment.utc(flex.criado).format('DD/MM/YYYY')}
+                                                </td>
+                                            </tr>
+                                        )
+                                    })
+                                    }
+                                </tbody>
+                            </Table>
+                        </div>
                     </div>
                 </div>
             </div>
+            <Modal id="modal" show={modalDefault} onHide={modalDefaultClose}>
+                <Modal.Header closeButton>
+                    <p className="text-left pt-2"><h1><strong>Alterar</strong></h1></p>
+                </Modal.Header>
+                <Modal.Body>
+                    <div className="row">
+                        <div className="col-md-10 offset-1">
+                            <form onSubmit={handlePut}>
+                                <div className="form-group text-left">
+                                    <label htmlFor="idCliente">Cliente</label>
+                                    <select className="form-control" id="idCliente" onChange={e => setIdUsuarioPut(e.target.value)}>
+                                        <option selected>{idUsuarioPut}</option>
+                                        {placeholders.map(placeholder => {
+                                            return (
+                                                <option value={`${placeholder.id}`}>{placeholder.name}</option>
+                                            )
+                                        })}
+                                    </select>
+                                </div>
+                                <div className="form-group text-left">
+                                    <label htmlFor="idMotivo">Motivo</label>
+                                    <input type="text" className="form-control" id="idMotivo" placeholder={motivoPut} onChange={e => setMotivoPut(e.target.value)} />
+                                </div>
+                                <div className="form-group text-left w-50">
+                                    <label htmlFor="idValor">Valor</label>
+                                    <input type="number" className="form-control" id="idValor" placeholder={valorPut} onChange={e => setValorPut(e.target.value)} />
+                                </div>
+                                <hr />
+                                <div className="form-group row justify-content-center">
+                                    <button type="submit" className="btn btn-green m-2"><strong>Alterar</strong></button>
+                                    <button type="button" className="btn btn-red m-2" onClick={modalDefaultClose}><strong>Cancelar</strong></button>
+                                </div>
+                            </form>
+                            <br />
+                        </div>
+                    </div>
+                </Modal.Body>
+            </Modal>
         </TestStyled>
     )
 }
