@@ -40,6 +40,8 @@ export default function Test() {
     let [motivoPut, setMotivoPut] = useState('')
     let [valorPut, setValorPut] = useState('')
 
+    let [idGet, setIdGet] = useState(0)
+
     // GET ALL - JSONPlaceholder 
     useEffect(() => {
         apiJSONPlaceholder.get(`users`).then(response => {
@@ -54,6 +56,9 @@ export default function Test() {
         fetch('https://provadev.xlab.digital/api/v1/divida?uuid=8d7297ad-3caa-4bab-9e16-99653958fac5')
             .then((response) => response.json())
             .then((json) => setFlexAll(json.result));
+
+        var x = parseInt(cliente)
+        setIdGet(x)
     };
 
     // CADASTRAR - POST
@@ -76,6 +81,7 @@ export default function Test() {
             buttons: [false],
             timer: 2000,
         }))
+        
     };
 
     // ALTERAR - GET/:id
@@ -140,7 +146,7 @@ export default function Test() {
             }
         })
     }
-
+    
     return (
         <TestStyled>
             <div className="py-5">
@@ -148,7 +154,7 @@ export default function Test() {
                 <div className="container shadow" style={{ width: '90vw', minWidth: '300px', padding: '30px' }}>
                     <div className="row justify-content-center">
                         <form onSubmit={handlePost} style={{ width: '100vw', maxWidth: '1000px' }}>
-                            <p className="text-left pt-2"><h1><strong>Cadastrar</strong></h1></p>
+                            <p className="text-left pt-2"><h1><strong>Cadastrar Dívida</strong></h1></p>
                             <div className="form-group text-left">
                                 <label htmlFor="idCliente">Cliente</label>
                                 <select className="form-control" id="idCliente" onChange={e => setCliente(e.target.value)} required>
@@ -183,10 +189,10 @@ export default function Test() {
                             <div className="form-group text-left">
                                 <label htmlFor="idCliente">Cliente</label>
                                 <select className="form-control" id="idCliente" onChange={e => setCliente(e.target.value)} required>
-                                    <option value="0" selected> TODOS </option>
+                                    <option selected> -- Selecionar -- </option>
                                     {placeholders.map(placeholder => {
                                         return (
-                                            <option value={`${placeholder.id}`}>{placeholder.name}</option>
+                                            <option onChange={() => setIdGet(placeholder.id)} value={`${placeholder.id}`}>{placeholder.name}</option>
                                         )
                                     })}
                                 </select>
@@ -203,7 +209,6 @@ export default function Test() {
                                 <thead>
                                     <tr>
                                         <th><h3>AÇÕES</h3></th>
-                                        <th><h3>NOME</h3></th>
                                         <th><h3>VALOR</h3></th>
                                         <th><h3>MOTIVO</h3></th>
                                         <th><h3>DATA</h3></th>
@@ -212,25 +217,35 @@ export default function Test() {
                                 <tbody>
                                     {flexsAll.map(flex => {
                                         return (
-                                            <tr>
-                                                <td>
-                                                    <a onClick={(e) => handlePutId(flex._id)} className="w-100 text-primary" href="javascript:void(0);"><BsPencil className="bs-5x" /></a>
-                                                    {' '}
-                                                    <a onClick={(e) => handleDelete(flex._id)} className="w-100 text-danger" href="javascript:void(0);"><strong><VscChromeClose className="vsc-5x" /></strong></a>
-                                                </td>
-                                                <td>
-                                                    {flex.idUsuario}
-                                                </td>
-                                                <td>
-                                                    R${flex.valor}
-                                                </td>
-                                                <td>
-                                                    {flex.motivo}
-                                                </td>
-                                                <td>
-                                                    {Moment.utc(flex.criado).format('DD/MM/YYYY')}
-                                                </td>
-                                            </tr>
+                                            <>{idGet === flex.idUsuario ?
+                                            <>{placeholders.map(x => {
+                                                return (
+                                                    <>{idGet === x.id ? 
+                                                        <tr>
+                                                            <td>
+                                                                {/* eslint-disable-next-line */}
+                                                                <a onClick={(e) => handlePutId(flex._id)} className="w-100 text-primary" href="javascript:void(0);"><BsPencil className="bs-5x" /></a>
+                                                                {' '}
+                                                                {/* eslint-disable-next-line */}
+                                                                <a onClick={(e) => handleDelete(flex._id)} className="w-100 text-danger" href="javascript:void(0);"><strong><VscChromeClose className="vsc-5x" /></strong></a>
+                                                            </td>
+                                                            <td>
+                                                                R${flex.valor}
+                                                            </td>
+                                                            <td>
+                                                                {flex.motivo}
+                                                            </td>
+                                                            <td>
+                                                                {Moment.utc(flex.criado).format('DD/MM/YYYY')}
+                                                            </td>
+                                                        </tr>
+                                                    : ''}
+                                                    </>
+                                                )
+                                            })}</>
+                                            :
+                                            ''}
+                                            </>
                                         )
                                     })
                                     }
@@ -241,7 +256,7 @@ export default function Test() {
                 </div>
             </div>
             <Modal id="modal" show={modalDefault} onHide={modalDefaultClose}>
-                <Modal.Header closeButton>
+                <Modal.Header>
                     <p className="text-left pt-2"><h1><strong>Alterar</strong></h1></p>
                 </Modal.Header>
                 <Modal.Body>
@@ -250,11 +265,12 @@ export default function Test() {
                             <form onSubmit={handlePut}>
                                 <div className="form-group text-left">
                                     <label htmlFor="idCliente">Cliente</label>
-                                    <select className="form-control" id="idCliente" onChange={e => setIdUsuarioPut(e.target.value)}>
-                                        <option selected>{idUsuarioPut}</option>
+                                    <select className="form-control" id="idCliente" onChange={e => setIdUsuarioPut(e.target.value)} disabled>
                                         {placeholders.map(placeholder => {
                                             return (
-                                                <option value={`${placeholder.id}`}>{placeholder.name}</option>
+                                                <>
+                                                    {(placeholder.id.toString()).localeCompare(idUsuarioPut) ? '' : <option selected value={`${placeholder.id}`}>{placeholder.name}</option>}
+                                                </>
                                             )
                                         })}
                                     </select>
@@ -268,7 +284,7 @@ export default function Test() {
                                     <input type="number" className="form-control" id="idValor" placeholder={valorPut} onChange={e => setValorPut(e.target.value)} />
                                 </div>
                                 <hr />
-                                <div className="form-group row justify-content-center">
+                                <div className="mb-0 form-group row justify-content-center">
                                     <button type="submit" className="btn btn-green m-2"><strong>Alterar</strong></button>
                                     <button type="button" className="btn btn-red m-2" onClick={modalDefaultClose}><strong>Cancelar</strong></button>
                                 </div>
