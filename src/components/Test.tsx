@@ -185,7 +185,7 @@ export default function Test() {
                 <div className="container shadow mt-3" style={{ width: '90vw', minWidth: '300px', padding: '30px' }}>
                     <div className="row justify-content-center">
                         <form onSubmit={handleGet} style={{ width: '100vw', maxWidth: '1000px' }}>
-                            <p className="text-left pt-2"><h1><strong>Lista de Devedores</strong></h1></p>
+                            <p className="text-left pt-2"><h1><strong>Consultar</strong></h1></p>
                             <div className="form-group text-left">
                                 <label htmlFor="idCliente">Cliente</label>
                                 <select className="form-control" id="idCliente" onChange={e => setCliente(e.target.value)} required>
@@ -223,8 +223,10 @@ export default function Test() {
                                                     <>{idGet === x.id ? 
                                                         <tr>
                                                             <td>
+                                                                {/* eslint-disable-next-line */}
                                                                 <a onClick={(e) => handlePutId(flex._id)} className="w-100 text-primary" href="javascript:void(0);"><BsPencil className="bs-5x" /></a>
                                                                 {' '}
+                                                                {/* eslint-disable-next-line */}
                                                                 <a onClick={(e) => handleDelete(flex._id)} className="w-100 text-danger" href="javascript:void(0);"><strong><VscChromeClose className="vsc-5x" /></strong></a>
                                                             </td>
                                                             <td>
